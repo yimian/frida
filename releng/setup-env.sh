@@ -183,7 +183,7 @@ FRIDA_SDKROOT="$FRIDA_BUILD/${frida_env_name_prefix}sdk-${host_os_arch}"
 if [ -n "$FRIDA_TOOLCHAIN_VERSION" ]; then
   toolchain_version=$FRIDA_TOOLCHAIN_VERSION
 else
-  toolchain_version=$(grep "frida_deps_version =" "$FRIDA_RELENG/deps.mk" | awk '{ print $NF }')
+  toolchain_version=$(grep "frida_bootstrap_version =" "$FRIDA_RELENG/deps.mk" | awk '{ print $NF }')
 fi
 if [ -n "$FRIDA_SDK_VERSION" ]; then
   sdk_version=$FRIDA_SDK_VERSION

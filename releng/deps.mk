@@ -1,9 +1,10 @@
-frida_deps_version = 20220130
+frida_deps_version = 20220306
 frida_bootstrap_version = 20220127
 
 
 frida_base_url = https://github.com/frida
 gnu_mirror = saimei.ftp.acc.umu.se/mirror/gnu.org/gnu
+ym_base_url = https://github.com/yimian
 
 
 include releng/system.mk
@@ -104,8 +105,8 @@ selinux_deps_for_build = \
 	$(NULL)
 
 glib_name = GLib
-glib_version = ad691b32d6cd967e029df4e1b3ed4d04e3059005
-glib_url = $(frida_base_url)/glib.git
+glib_version = 4c749d5f2c0b123e51d4b7aa4f536775b65d62de
+glib_url = $(ym_base_url)/glib.git
 glib_hash = $(NULL)
 glib_recipe = meson
 glib_patches = \
