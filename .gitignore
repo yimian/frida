@@ -8,3 +8,4 @@
 /releng/modules/frida-gadget-ios/node_modules
 /g-ir-cpp-*.c
 .idea
+.DS_Store

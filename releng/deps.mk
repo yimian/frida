@@ -569,7 +569,7 @@ v8_options = \
 	fatal_linker_warnings=false \
 	use_glib=false \
 	use_goma=false \
-	v8_embedder_string="-frida" \
+	v8_embedder_string="-monda" \
 	$(NULL)
 v8_deps = \
 	$(NULL)
