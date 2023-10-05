@@ -67,16 +67,16 @@ runs:
             echo "Invalid repo specified" > /dev/stderr
             exit 1
         esac
-        aws s3 sync --delete pool/ s3://build.frida.re${prefix}/pool/
+        aws s3 sync --delete pool/ s3://dragonfly${prefix}/pool/
         for file in Release Packages Packages.gz; do
-          aws s3 cp $file s3://build.frida.re${prefix}/
+          aws s3 cp $file s3://dragonfly${prefix}/ios --acl public-read
         done
-        for file in Release Packages Packages.gz; do
-          aws s3 cp $file s3://build.frida.re${prefix}/./
-        done
-        urls_to_invalidate=()
-        for file in Release Packages Packages.gz ./Release ./Packages ./Packages.gz; do
-          urls_to_invalidate+=("https://build.frida.re${prefix}/${file}")
-        done
-        cfcli purge ${urls_to_invalidate[@]}
+        # for file in Release Packages Packages.gz; do
+        #   aws s3 cp $file s3://dragonfly${prefix}/./ --acl public-read
+        # done
+        # urls_to_invalidate=()
+        # for file in Release Packages Packages.gz ./Release ./Packages ./Packages.gz; do
+        #   urls_to_invalidate+=("https://dragonfly.s3.cn-northwest-1.amazonaws.com.cn${prefix}/${file}")
+        # done
+        # cfcli purge ${urls_to_invalidate[@]}
       shell: bash

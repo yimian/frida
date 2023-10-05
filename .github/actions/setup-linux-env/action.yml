@@ -7,6 +7,10 @@ inputs:
   aws-secret-access-key:
     required: true
     description: The aws-secret-access-key used to authenticate with AWS
+  aws-region:
+    required: true
+    description: The aws-region used to authenticate with AWS
+    default: us-east-1
   cloudflare-email:
     required: true
     description: The email used to authenticate with Cloudflare
@@ -39,7 +43,7 @@ runs:
       with:
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
         aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
-        aws-region: us-east-1
+        aws-region: ${{ inputs.aws-region }}
     - name: Configure Cloudflare credentials
       run: |
         (

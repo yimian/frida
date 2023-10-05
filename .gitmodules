@@ -9,10 +9,10 @@
 	url = https://github.com/frida/frida-python.git
 [submodule "frida-node"]
 	path = frida-node
-	url = https://github.com/frida/frida-node.git
+	url = https://github.com/yimian/frida-node.git
 [submodule "frida-swift"]
 	path = frida-swift
-	url = https://github.com/frida/frida-swift.git
+	url = https://github.com/yimian/frida-swift.git
 [submodule "frida-clr"]
 	path = frida-clr
 	url = https://github.com/frida/frida-clr.git

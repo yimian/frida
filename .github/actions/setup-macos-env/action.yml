@@ -16,6 +16,10 @@ inputs:
   aws-secret-access-key:
     required: true
     description: The aws-secret-access-key used to authenticate with AWS
+  aws-region:
+    required: true
+    description: The aws-region used to authenticate with AWS
+    default: us-east-1
   cloudflare-email:
     required: true
     description: The email used to authenticate with Cloudflare
@@ -33,16 +37,20 @@ runs:
       run: |
         CERTIFICATE_PATH=$RUNNER_TEMP/apple-certificates.p12
         KEYCHAIN_PATH=$RUNNER_TEMP/frida-signing.keychain-db
-        echo -n "$CERTIFICATES_P12" | base64 --decode --output $CERTIFICATE_PATH
+        CER_PATH=$RUNNER_TEMP/frida-cert.crt
+        echo -n "$CERTIFICATES_P12" | base64 --decode -o $CERTIFICATE_PATH
         security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
         security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
         security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
         security import $CERTIFICATE_PATH -P "$CERTIFICATES_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+        openssl pkcs12 -in $CERTIFICATE_PATH -clcerts -nokeys -password pass:$CERTIFICATES_PASSWORD -out $CER_PATH
+        sudo security authorizationdb write com.apple.trust-settings.admin allow
+        sudo security add-trusted-cert -d -r trustRoot -p codeSign -k $KEYCHAIN_PATH $CER_PATH > /dev/null 2>&1
         security list-keychain -d user -s $KEYCHAIN_PATH
         rm $CERTIFICATE_PATH
         (
-          MACOS_CERTID=$(security find-identity -v -p codesigning | grep "Developer ID Application: " | awk '{ print $2 }')
-          IOS_CERTID=$(security find-identity -v -p codesigning | grep "Apple Development: " | awk '{ print $2 }')
+          MACOS_CERTID=$(security find-identity -v -p codesigning | grep "frida-cert" | awk '{ print $2 }')
+          IOS_CERTID=$MACOS_CERTID
           echo MACOS_CERTID=$MACOS_CERTID
           echo IOS_CERTID=$IOS_CERTID
           echo WATCHOS_CERTID=$IOS_CERTID
@@ -72,14 +80,14 @@ runs:
       with:
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
         aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
-        aws-region: us-east-1
+        aws-region: ${{ inputs.aws-region }}
     - name: Configure AWS credentials (arm64)
       if: runner.arch == 'ARM64'
       run: |
         mkdir -p ~/.aws
         (
           echo "[default]"
-          echo "region = us-east-1"
+          echo "region = ${{ inputs.aws-region }}"
         ) > ~/.aws/config
         (
           echo "[default]"

@@ -19,7 +19,7 @@ if platform.system() == 'Windows':
     import winenv
 
 
-BUNDLE_URL = "https://build.frida.re/deps/{version}/{filename}"
+BUNDLE_URL = "https://dragonfly.s3.cn-northwest-1.amazonaws.com.cn/deps/{version}/{filename}"
 
 RELENG_DIR = Path(__file__).parent.resolve()
 DEPS_MK_PATH = RELENG_DIR / "deps.mk"
@@ -185,7 +185,7 @@ def roll(bundle: Bundle, host: str, activate: bool):
         if e.code != 404:
             raise CommandError("network error") from e
 
-    s3_url = "s3://build.frida.re/deps/{version}/{filename}".format(version=version, filename=filename)
+    s3_url = "s3://dragonfly/deps/{version}/{filename}".format(version=version, filename=filename)
 
     # We will most likely need to build, but let's check S3 to be certain.
     r = subprocess.run(["aws", "s3", "ls", s3_url], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='utf-8')
@@ -218,10 +218,10 @@ def roll(bundle: Bundle, host: str, activate: bool):
                        ],
                        check=True)
 
-    subprocess.run(["aws", "s3", "cp", artifact, s3_url], check=True)
+    subprocess.run(["aws", "s3", "cp", artifact, s3_url, "--acl", "public-read"], check=True)
 
     # Use the shell for Windows compatibility, where npm generates a .bat script.
-    subprocess.run("cfcli purge " + public_url, shell=True, check=True)
+    # subprocess.run("cfcli purge " + public_url, shell=True, check=True)
 
     if activate and bundle == Bundle.TOOLCHAIN:
         configure_bootstrap_version(version)

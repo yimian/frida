@@ -10,6 +10,12 @@ inputs:
   testpypi-token:
     required: true
     description: The token used to authenticate with test.pypi.org
+  upload-user:
+    required: false
+    description: The usename for uploading to local pypi server
+  pypi-url:
+    required: false
+    description: The pypi server url
 runs:
   using: composite
   steps:
@@ -48,11 +54,11 @@ runs:
       with:
         name: frida-python-linux-x86_64
         path: build/python-packages/
-    - name: Download wheel for Linux/armhf
-      uses: actions/download-artifact@v3
-      with:
-        name: frida-python-linux-armhf
-        path: build/python-packages/
+    # - name: Download wheel for Linux/armhf
+    #   uses: actions/download-artifact@v3
+    #   with:
+    #     name: frida-python-linux-armhf
+    #     path: build/python-packages/
     - name: Download wheel for Linux/arm64
       uses: actions/download-artifact@v3
       with:
@@ -71,3 +77,16 @@ runs:
         password: ${{ inputs.testpypi-token }}
         repository_url: https://test.pypi.org/legacy/
         packages_dir: build/python-packages/
+    - name: Publish to local pypi server
+      if: inputs.site == 'local'
+      uses: pypa/gh-action-pypi-publish@release/v1.5
+      with:
+        user: ${{ inputs.upload-user }}
+        password: ${{ inputs.pypi-token }}
+        repository-url: ${{ inputs.pypi-url }}
+        packages_dir: build/python-packages/
+    - name: Publish to aws s3
+      if: inputs.site == 's3'
+      run: |
+        aws s3 sync build/python-packages/ s3://dragonfly/python-packages
+      shell: bash
